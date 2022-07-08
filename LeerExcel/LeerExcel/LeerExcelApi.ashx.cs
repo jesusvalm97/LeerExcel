@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace LeerExcel
 {
@@ -38,6 +42,11 @@ namespace LeerExcel
                 }
 
                 #endregion
+
+                //Obtener json del contenido del excel
+                string json = ObtenerJSONDeExcel();
+
+                Responder(json);
             }
             catch (Exception exception)
             {
@@ -105,6 +114,37 @@ namespace LeerExcel
             #endregion
 
             return true;
+        }
+
+        /// <summary>
+        /// Obtener json del contenido del archivo excel
+        /// </summary>
+        /// <returns>String del json armado en base al contenido del archivo excel</returns>
+        public string ObtenerJSONDeExcel()
+        {
+            //Crear el objeto excel en base a la ruta del archivo. Es necesario crear cada objeto.
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlworkbook = xlApp.Workbooks.Open(RutaArchivoExcel);
+            //El nuget de mircrosoft trabaja en base a 1 y no 0 como en un arreglo normal
+            Excel._Worksheet xlWorkSheet = xlworkbook.Sheets[1];
+            Excel.Range xlRange = xlWorkSheet.UsedRange;
+
+            //Obtener numero de filas y columnas
+            int numeroFilas = xlRange.Rows.Count;
+            int numeroColumnas = xlRange.Columns.Count;
+
+            //Recorrer el excel
+            for (int x = 1; x < numeroFilas; x++)
+            {
+                for (int y = 1; y < numeroColumnas; y++)
+                {
+                    //Obtener valor de la celda
+                    dynamic celda = xlRange.Cells[x, y];
+                    dynamic valorCelda = celda.Value2;
+                }
+            }
+
+            return "";
         }
 
         #endregion

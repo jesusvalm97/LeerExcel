@@ -11,7 +11,26 @@
     <form id="form1" runat="server">
         <div>
             Hola mundo
+            
+            <asp:HiddenField ID="HiddenB64" runat="server" ClientIDMode="Static" />
+            
         </div>
     </form>
+
+    <script>
+        const LeerExcel = async () => {
+            try {
+
+                var hiddenb64 = document.getElementById("HiddenB64");
+
+                const resp = await fetch("/LeerExcelApi.ashx?b64=" + hiddenb64.value);
+                const data = await.resp.json();
+                console.log(data);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        };
+    </script>
 </body>
 </html>

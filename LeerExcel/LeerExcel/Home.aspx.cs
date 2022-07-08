@@ -11,7 +11,9 @@ namespace LeerExcel
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            byte[] bytes = System.IO.File.ReadAllBytes(@"C:\Users\e4911449\Documents\EjemploExcel.xlsx");
+            string b64 = Convert.ToBase64String(bytes);
+            HiddenB64.Value = b64;
         }
     }
 }
