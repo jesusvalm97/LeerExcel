@@ -18,19 +18,32 @@
     </form>
 
     <script>
-        const LeerExcel = async () => {
-            try {
 
-                var hiddenb64 = document.getElementById("HiddenB64");
+        const LeerExcel = () => {
+            //Create the http request
+            var httpRequest = new XMLHttpRequest();
+            //Create the url
+            var hiddenb64 = document.getElementById("HiddenB64");
+            var url = "https://localhost:44351/LeerExcelApi.ashx?b64=" + hiddenb64.value;
 
-                const resp = await fetch("/LeerExcelApi.ashx?b64=" + hiddenb64.value);
-                const data = await.resp.json();
-                console.log(data);
+            //Set the function for call when the state change
+            httpRequest.onreadystatechange = function () {
+
+                //If the ready state is equal to 4 and the stauts is equal to 200, so the process is successfull
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this);
+                }
+                else {
+                    console.log(this);
+                }
             }
-            catch (error) {
-                console.log(error);
-            }
+
+            //Open the and send the request
+            httpRequest.open('GET', url, true);
+            httpRequest.send();
         };
+        LeerExcel();
+
     </script>
 </body>
 </html>
