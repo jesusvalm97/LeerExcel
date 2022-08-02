@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace LeerExcel
 {
@@ -15,8 +17,62 @@ namespace LeerExcel
     /// </summary>
     public class LeerExcelApi : IHttpHandler
     {
-        HttpContext Context;
-        string RutaArchivoExcel;
+        #region Propiedades
+
+        /// <summary>
+        /// Context sirve para obtener los parametros del request y para retornar el response
+        /// </summary>
+        HttpContext Context
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// La ruta temporal del archivo excel
+        /// </summary>
+        string RutaArchivoExcel
+        {
+            get
+            {
+                object value = Context.Session["LeerExcelApi.RutaArchivoExcel"];
+
+                if (value == null)
+                {
+                    return string.Empty;
+                }
+
+                return value.ToString();
+            }
+            set
+            {
+                Context.Session["LeerExcelApi.RutaArchivoExcel"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Llave para desencriptar
+        /// </summary>
+        //string EncryptionKey
+        //{
+        //    get
+        //    {
+        //        object value = Context.Session["LeerExcelApi.EncryptionKey"];
+
+        //        if (value == null)
+        //        {
+        //            return string.Empty;
+        //        }
+
+        //        return value.ToString();
+        //    }
+        //    set
+        //    {
+        //        Context.Session["LeerExcelApi.EncryptionKey"] = value;
+        //    }
+        //}
+
+        #endregion
 
         public void ProcessRequest(HttpContext context)
         {
@@ -54,7 +110,7 @@ namespace LeerExcel
             }
         }
 
-        #region Methods
+        #region Metodos
 
         public bool IsReusable
         {
@@ -86,6 +142,8 @@ namespace LeerExcel
             {
                 return false;
             }
+
+            b64 = Decrypt(b64);
 
             //Convertir b64 a bytes
             byte[] bytes = Convert.FromBase64String(b64);
@@ -146,6 +204,66 @@ namespace LeerExcel
 
             return "";
         }
+
+        /// <summary>
+        /// Encriptar un string
+        /// </summary>
+        /// <param name="encryptString">String a encriptar</param>
+        /// <returns>El string encriptado</returns>
+        public string Encrypt(string encryptString)
+        {
+            string EncryptionKey = "a15*/3hfjHJairtk96adfsFUIh87w340y5afdm9860-04*/2w46";
+            byte[] clearBytes = Encoding.Unicode.GetBytes(encryptString);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] {
+                0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76
+            });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
+                    }
+                    encryptString = Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return encryptString;
+        }
+
+        /// <summary>
+        /// Desencripta el string
+        /// </summary>
+        /// <param name="cipherText">String encriptado</param>
+        /// <returns>El string desencriptado</returns>
+        public string Decrypt(string cipherText)
+        {
+            string EncryptionKey = "a15*/3hfjHJairtk96adfsFUIh87w340y5afdm9860-04*/2w46";
+            cipherText = cipherText.Replace(" ", "+");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] {
+                0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76
+            });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
+                    }
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                }
+            }
+            return cipherText;
+        }
+
 
         #endregion
     }
