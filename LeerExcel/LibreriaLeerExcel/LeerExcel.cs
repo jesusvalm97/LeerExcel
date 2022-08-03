@@ -104,6 +104,7 @@ namespace LibreriaLeerExcel
                     objetos.Add(objeto);
             }
 
+            //Retornar la lista de objetos en forma de json
             return Newtonsoft.Json.JsonConvert.SerializeObject(objetos);
         }
 
