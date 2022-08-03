@@ -11,7 +11,7 @@ namespace ApiLeerExcel.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LeerExcel : ControllerBase
+    public class LeerExcelT1 : ControllerBase
     {
         #region Propiedades
 
