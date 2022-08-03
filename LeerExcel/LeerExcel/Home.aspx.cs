@@ -15,14 +15,19 @@ namespace LeerExcel
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            byte[] bytes = System.IO.File.ReadAllBytes(@"C:\Users\e4911449\Documents\EjemploExcel.xlsx");
-            string b64 = Convert.ToBase64String(bytes);
-            //HiddenB64.Value = b64;
-            string b64Encrypado = Encrypt(b64);
-            string url = "https://localhost:44351/LeerExcelApi.ashx?b64=" + b64Encrypado;
+            //byte[] bytes = System.IO.File.ReadAllBytes(@"C:\Users\e4911449\Documents\EjemploExcel.xlsx");
+            //string b64 = Convert.ToBase64String(bytes);
+            ////HiddenB64.Value = b64;
+            //string b64Encrypado = Encrypt(b64);
+            //string url = "https://localhost:44351/LeerExcelApi.ashx?b64=" + b64Encrypado;
 
-            WebClient webClient = new WebClient();
-            string response = webClient.DownloadString(url);
+            //WebClient webClient = new WebClient();
+            //string response = webClient.DownloadString(url);
+
+            Class1 class1 = new Class1();
+            class1.Propiedades.Add("saludos", "hola mundo");
+
+            string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(class1);
         }
 
         /// <summary>
