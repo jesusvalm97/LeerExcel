@@ -11,12 +11,30 @@ namespace LibreriaLeerExcel
     {
         #region Main Methods
 
+        /// <summary>
+        /// Leer un excel medio de los bytes
+        /// </summary>
+        /// <param name="bytes">Los bytes del excel a leer</param>
+        /// <returns>Un json con el contenido del excel. El json está armado en base a que cada fila es un objeto y cada columna es una propiedad</returns>
         public static string Leer(byte[] bytes)
         {
             string rutaExcel = GuardarExcel(bytes);
             string json = ObtenerJSONDeExcel(rutaExcel);
 
             return json;
+        }
+
+        /// <summary>
+        /// Leer un excel medio del base 64
+        /// </summary>
+        /// <param name="b64">El base 64 del excel a leer</param>
+        /// <returns>Un json con el contenido del excel. El json está armado en base a que cada fila es un objeto y cada columna es una propiedad</returns>
+        public static string Leer(string b64)
+        {
+            //Convertir base 64 a arreglo de bytes
+            byte[] bytes = Convert.FromBase64String(b64);
+
+            return Leer(bytes);
         }
 
         #endregion
